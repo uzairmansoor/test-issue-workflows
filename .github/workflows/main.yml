@@ -35,7 +35,7 @@ jobs:
           echo "Repository: uzairmansoor/test-issue-workflows"
           echo "Issue ID: ${{ github.event.issue.id }}"
 
-          QUERY='
+          TEST_QUERY='
           {
             repository(owner: "uzairmansoor", name: "test-issue-workflows") {
               issue(number: 1) {
@@ -51,14 +51,50 @@ jobs:
             }
           }'
 
+          QUERY='
+            {
+            repository(owner: "uzairmansoor", name: "test-issue-workflows") {
+                issue(number: 1) {
+                id
+                projectItems(first: 1) {
+                    nodes {
+                    id
+                    project {
+                        id
+                    }
+                    fieldValues(first: 10) {  # Fetching field values related to this project item
+                        nodes {
+                        id
+                        field {
+                            id
+                            name
+                        }
+                        value
+                        }
+                    }
+                    }
+                }
+                }
+            }
+            }'
+
+
           RESPONSE=$(gh api graphql -f query="$QUERY")
           echo "$RESPONSE"
           
           PROJECT_ID=$(echo "$RESPONSE" | jq -r '.data.repository.issue.projectItems.nodes[0].project.id')
           ITEM_ID=$(echo "$RESPONSE" | jq -r '.data.repository.issue.projectItems.nodes[0].id')
+          ISSUE_ID=$(echo "$RESPONSE" | jq -r '.data.repository.issue.id')
+          FIELD_ID=$(echo "$RESPONSE" | jq -r '.data.repository.issue.projectItems.nodes[0].fieldValues.nodes[0].field.id')
+          FIELD_VALUE_ID=$(echo "$RESPONSE" | jq -r '.data.repository.issue.projectItems.nodes[0].fieldValues.nodes[0].id')
+          FIELD_VALUE=$(echo "$RESPONSE" | jq -r '.data.repository.issue.projectItems.nodes[0].fieldValues.nodes[0].value')
 
-          echo "$PROJECT_ID"
-          echo "$ITEM_ID"
+          echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
+          echo "ITEM_ID=$ITEM_ID" >> $GITHUB_ENV
+          echo "ISSUE_ID=$ISSUE_ID" >> $GITHUB_ENV
+          echo "FIELD_ID=$FIELD_ID" >> $GITHUB_ENV
+          echo "FIELD_VALUE_ID=$FIELD_VALUE_ID" >> $GITHUB_ENV
+          echo "FIELD_VALUE=$FIELD_VALUE" >> $GITHUB_ENV
 
           if [ -z "$PROJECT_ID" ] || [ "$PROJECT_ID" == "null" ]; then
             echo "No project found for this issue."
