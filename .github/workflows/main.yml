@@ -54,7 +54,7 @@ jobs:
           RESPONSE=$(gh api graphql -f query="$QUERY")
           echo "$RESPONSE"
 
-          PROJECT_ID=$(echo "$RESPONSE" | jq -r '.data.repository.issue.projectItems.nodes[0].project.id')
+          PROJECT_ID=1
           ITEM_ID=$(echo "$RESPONSE" | jq -r '.data.repository.issue.projectItems.nodes[0].id')
 
           if [ -z "$PROJECT_ID" ] || [ "$PROJECT_ID" == "null" ]; then
