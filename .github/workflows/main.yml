@@ -27,32 +27,50 @@ jobs:
           echo "No valid status found."
           exit 1
 
-      - name: Get Issue Project ID
-        id: get_project_id
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          QUERY='
-          {
-            repository(owner: "uzairmansoor", name: "test-issue-workflows") {
-              issue(number: ${{ github.event.issue.number }}) {
-                projectItems(first: 1) {
-                  nodes {
-                    id
-                  }
-                }
-              }
-            }
-          }'
+    #   - name: Get Issue Project ID
+    #     id: get_project_id
+    #     env:
+    #       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     run: |
+    #       QUERY='
+    #       {
+    #         repository(owner: "uzairmansoor", name: "test-issue-workflows") {
+    #           issue(number: ${{ github.event.issue.number }}) {
+    #             projectItems(first: 1) {
+    #               nodes {
+    #                 id
+    #               }
+    #             }
+    #           }
+    #         }
+    #       }'
 
-          PROJECT_ID=$(gh api graphql -f query="$QUERY" --jq '.data.repository.issue.projectItems.nodes[0].id')
+    #       PROJECT_ID=$(gh api graphql -f query="$QUERY" --jq '.data.repository.issue.projectItems.nodes[0].id')
           
-          if [ -z "$PROJECT_ID" ] || [ "$PROJECT_ID" == "null" ]; then
-            echo "No project found for this issue."
-            exit 1
-          fi
+    #       if [ -z "$PROJECT_ID" ] || [ "$PROJECT_ID" == "null" ]; then
+    #         echo "No project found for this issue."
+    #         exit 1
+    #       fi
           
-          echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
+    #       echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
+
+      - name: Get Issue Project Card ID (For Classic Projects)
+        id: get_project_card_id
+        env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            ISSUE_ID="${{ github.event.issue.id }}"
+            PROJECT_CARDS=$(gh api "repos/uzairmansoor/test-issue-workflows/issues/$ISSUE_ID/cards")
+            
+            CARD_ID=$(echo "$PROJECT_CARDS" | jq -r '.[0].id')
+        
+            if [ -z "$CARD_ID" ] || [ "$CARD_ID" == "null" ]; then
+                echo "No project card found for this issue."
+                exit 1
+            fi
+        
+            echo "CARD_ID=$CARD_ID" >> $GITHUB_ENV
+  
 
       - name: Update Issue Status
         env:
