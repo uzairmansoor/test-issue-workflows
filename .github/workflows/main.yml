@@ -62,14 +62,25 @@ jobs:
                     project {
                         id
                     }
-                    fieldValues(first: 10) {  # Fetching field values related to this project item
+                    fieldValues(first: 10) {  
                         nodes {
                         id
                         field {
                             id
                             name
                         }
-                        value
+                        ... on ProjectV2ItemFieldTextValue {
+                            text
+                        }
+                        ... on ProjectV2ItemFieldSingleSelectValue {
+                            name
+                        }
+                        ... on ProjectV2ItemFieldNumberValue {
+                            number
+                        }
+                        ... on ProjectV2ItemFieldDateValue {
+                            date
+                        }
                         }
                     }
                     }
