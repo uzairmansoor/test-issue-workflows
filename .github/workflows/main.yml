@@ -1,0 +1,53 @@
+name: Update Project Status from Comments
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  update-status:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      repository-projects: write
+
+    steps:
+      - name: Check for valid comment
+        id: check_comment
+        run: |
+          COMMENT_BODY="${{ github.event.comment.body }}"
+          VALID_STATUSES=("Development" "Todo")
+
+          for STATUS in "${VALID_STATUSES[@]}"; do
+            if [[ "$COMMENT_BODY" == "$STATUS" ]]; then
+              echo "STATUS=$STATUS" >> $GITHUB_ENV
+              exit 0
+            fi
+          done
+          echo "No valid status found."
+          exit 1
+
+      - name: Get Issue Project ID
+        id: get_project_id
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_URL="${{ github.event.issue.url }}"
+          PROJECTS=$(gh api "$ISSUE_URL/projects")
+
+          PROJECT_ID=$(echo "$PROJECTS" | jq -r '.[0].id') # Get the first project ID
+          if [ "$PROJECT_ID" == "null" ]; then
+            echo "No project found for this issue."
+            exit 1
+          fi
+          echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
+
+      - name: Update Issue Status
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api \
+            --method PATCH \
+            -H "Accept: application/vnd.github+json" \
+            "/projects/columns/cards/$PROJECT_ID" \
+            -f note="Updated status to: $STATUS"
