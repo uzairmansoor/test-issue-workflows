@@ -51,34 +51,6 @@ jobs:
             }
           }'
 
-          QUERY='
-            {
-            repository(owner: "uzairmansoor", name: "test-issue-workflows") {
-                issue(number: 1) {
-                id
-                projectItems(first: 1) {
-                    nodes {
-                    id
-                    project {
-                        id
-                    }
-                    fieldValues(first: 10) {  # Fetching field values related to this project item
-                        nodes {
-                        id
-                        field {
-                            id
-                            name
-                        }
-                        value
-                        }
-                    }
-                    }
-                }
-                }
-            }
-            }'
-
-
           RESPONSE=$(gh api graphql -f query="$QUERY")
           echo "$RESPONSE"
           
