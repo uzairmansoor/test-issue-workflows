@@ -35,7 +35,7 @@ jobs:
           echo "Repository: uzairmansoor/test-issue-workflows"
           echo "Issue ID: ${{ github.event.issue.id }}"
 
-          QUERY='
+          TEST_QUERY='
           {
             repository(owner: "uzairmansoor", name: "test-issue-workflows") {
               issue(number: 1) {
@@ -45,6 +45,44 @@ jobs:
                     name
                     project {
                       id
+                    }
+                  }
+                }
+              }
+            }
+          }'
+
+          QUERY='
+          {
+            repository(owner: "uzairmansoor", name: "test-issue-workflows") {
+              projectV2(number: 1) {
+                id
+                fields(first: 20) {
+                  nodes {
+                    id
+                    name
+                  }
+                }
+              }
+              issue(number: ${{ github.event.issue.number }}) {
+                id
+                projectItems(first: 1) {
+                  nodes {
+                    id
+                    project {
+                      id
+                    }
+                    fieldValues(first: 10) {
+                      nodes {
+                        id
+                        field {
+                          id
+                          name
+                        }
+                        ... on ProjectV2ItemFieldSingleSelectValue {
+                          name
+                        }
+                      }
                     }
                   }
                 }
