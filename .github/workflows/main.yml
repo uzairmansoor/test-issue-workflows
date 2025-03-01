@@ -32,22 +32,44 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ISSUE_URL="${{ github.event.issue.url }}"
-          PROJECTS=$(gh api "$ISSUE_URL/projects")
+          QUERY='
+          {
+            repository(owner: "uzairmansoor", name: "test-issue-workflows") {
+              issue(number: ${{ github.event.issue.number }}) {
+                projectItems(first: 1) {
+                  nodes {
+                    id
+                  }
+                }
+              }
+            }
+          }'
 
-          PROJECT_ID=$(echo "$PROJECTS" | jq -r '.[0].id') # Get the first project ID
-          if [ "$PROJECT_ID" == "null" ]; then
+          PROJECT_ID=$(gh api graphql -f query="$QUERY" --jq '.data.repository.issue.projectItems.nodes[0].id')
+          
+          if [ -z "$PROJECT_ID" ] || [ "$PROJECT_ID" == "null" ]; then
             echo "No project found for this issue."
             exit 1
           fi
+          
           echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
 
       - name: Update Issue Status
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh api \
-            --method PATCH \
-            -H "Accept: application/vnd.github+json" \
-            "/projects/columns/cards/$PROJECT_ID" \
-            -f note="Updated status to: $STATUS"
+          gh api graphql -f query='
+          mutation {
+            updateProjectV2ItemFieldValue(
+              input: {
+                projectId: "PROJECT_ID"
+                itemId: "${{ env.PROJECT_ID }}"
+                fieldId: "STATUS_FIELD_ID"
+                value: { text: "${{ env.STATUS }}" }
+              }
+            ) {
+              projectV2Item {
+                id
+              }
+            }
+          }'
