@@ -53,9 +53,12 @@ jobs:
 
           RESPONSE=$(gh api graphql -f query="$QUERY")
           echo "$RESPONSE"
-
-          PROJECT_ID=1
+          
+          PROJECT_ID=$(echo "$RESPONSE" | jq -r '.data.repository.issue.projectItems.nodes[0].project.id')
           ITEM_ID=$(echo "$RESPONSE" | jq -r '.data.repository.issue.projectItems.nodes[0].id')
+
+          echo "$PROJECT_ID"
+          echo "$ITEM_ID"
 
           if [ -z "$PROJECT_ID" ] || [ "$PROJECT_ID" == "null" ]; then
             echo "No project found for this issue."
