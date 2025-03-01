@@ -57,7 +57,7 @@ jobs:
       - name: Get Issue Project Card ID (For Classic Projects)
         id: get_project_card_id
         env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
             ISSUE_ID="${{ github.event.issue.id }}"
             PROJECT_CARDS=$(gh api "repos/uzairmansoor/test-issue-workflows/issues/$ISSUE_ID/cards")
