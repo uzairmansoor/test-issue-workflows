@@ -1,0 +1,31 @@
+#   - name: Get Issue Project ID
+    #     id: get_project_id
+    #     env:
+    #       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     run: |
+    #       QUERY='
+    #       {
+    #         repository(owner: "uzairmansoor", name: "test-issue-workflows") {
+    #           issue(number: ${{ github.event.issue.number }}) {
+    #             projectItems(first: 1) {
+    #               nodes {
+    #                 id
+    #               }
+    #             }
+    #           }
+    #         }
+    #       }'
+
+    #       PROJECT_ID=$(gh api graphql -f query="$QUERY" --jq '.data.repository.issue.projectItems.nodes[0].id')
+          
+    #       if [ -z "$PROJECT_ID" ] || [ "$PROJECT_ID" == "null" ]; then
+    #         echo "No project found for this issue."
+    #         exit 1
+    #       fi
+          
+    #       echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
+
+
+        #   organization-projects: write # Needed for org projects
+
+    # {{ github.event.issue.number }})
