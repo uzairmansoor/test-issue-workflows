@@ -90,9 +90,11 @@ jobs:
                     }
                     }
                 }' | jq -r '.data.node.options[] | select(.name=="Done") | .id')
+
+                echo "Fetched STATUS_VALUE: $STATUS_VALUE"
             
             gh api graphql -f query='
-                mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ID!) {
+                mutation updateStatus($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ID!) {
                 updateProjectV2ItemFieldValue(
                     input: {
                     projectId: $projectId
