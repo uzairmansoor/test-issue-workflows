@@ -69,29 +69,35 @@ jobs:
           echo "ITEM_ID=$ITEM_ID" >> $GITHUB_ENV
       
       - name: Update Issue Status
+        shell: /usr/bin/bash -e {0}
         env:
             GH_TOKEN: ${{ secrets.CLASSIC_GITHUB_TOKEN }}
+            STATUS: Development
+            PROJECT_ID: PVT_kwHOBORmpM4AzYug
+            ITEM_ID: PVTI_lAHOBORmpM4AzYugzgX1a7g
         run: |
-            PROJECT_ID="PVT_kwHOBORmpM4AzYug"
-            ITEM_ID="PVTI_lAHOBORmpM4AzYugzgX1a7g"
             STATUS_FIELD_ID="PVTSSF_lAHOBORmpM4AzYugzgpL_bA"
             STATUS_VALUE="In Progress"
         
             gh api graphql -f query='
-                mutation {
+                mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: String!) {
                 updateProjectV2ItemFieldValue(
                     input: {
-                    projectId: "'$PROJECT_ID'"
-                    itemId: "'$ITEM_ID'"
-                    fieldId: "'$STATUS_FIELD_ID'"
-                    value: { text: "'$STATUS_VALUE'" }
+                    projectId: $projectId
+                    itemId: $itemId
+                    fieldId: $fieldId
+                    value: { text: $value }
                     }
                 ) {
                     projectV2Item {
                     id
                     }
                 }
-                }'
+                }' \
+                -F projectId="$PROJECT_ID" \
+                -F itemId="$ITEM_ID" \
+                -F fieldId="$STATUS_FIELD_ID" \
+                -F value="$STATUS_VALUE"
     
       - name: Update Issue Status1
         env:
