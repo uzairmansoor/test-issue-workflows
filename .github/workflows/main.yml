@@ -78,7 +78,19 @@ jobs:
         run: |
             STATUS_FIELD_ID="PVTSSF_lAHOBORmpM4AzYugzgpL_bA"
             STATUS_VALUE="In Progress"
-        
+            
+            gh api graphql -f query='
+                query {
+                    node(id: "PVTSSF_lAHOBORmpM4AzYugzgpL_bA") {
+                    ... on ProjectV2SingleSelectField {
+                        options {
+                        id
+                        name
+                        }
+                    }
+                    }
+                }'
+            
             gh api graphql -f query='
                 mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: String!) {
                 updateProjectV2ItemFieldValue(
