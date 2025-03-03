@@ -81,13 +81,20 @@ jobs:
                 ... on ProjectV2 {
                 fields(first: 20) {
                     nodes {
-                    id
-                    name
+                    ... on ProjectV2SingleSelectField {  # Handle dropdown fields like Status
+                        id
+                        name
+                    }
+                    ... on ProjectV2Field {  # Handle other standard fields
+                        id
+                        name
+                    }
                     }
                 }
                 }
             }
             }'
+
 
 
           gh api graphql -f query='
