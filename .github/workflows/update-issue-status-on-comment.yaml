@@ -19,7 +19,6 @@ jobs:
       - name: Get project data
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
-          # ORGANIZATION: ${{ github.event.organization.login }} # <organization_name> or github.event.organization.login
           REPO: ${{ github.event.repository.name }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
@@ -52,7 +51,7 @@ jobs:
                   }
                 }
               }
-            }' -f org=$ORGANIZATION -F number=$ISSUE_NUMBER -f repo=$REPO > project_data.json
+            }' -F number=$ISSUE_NUMBER -f repo=$REPO > project_data.json
           cat project_data.json
           
           echo 'STATUS_FIELD_ID='$(jq '.data.repository.issue.projectsV2.nodes[0].fields.nodes[] | select(.name== "Status") | .id' project_data.json) >> $GITHUB_ENV
