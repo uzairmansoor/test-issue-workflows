@@ -89,9 +89,7 @@ jobs:
                         }
                     }
                     }
-                }' | jq -r '.data.node.options[] | select(.name=="Done") | .id')
-
-                echo "Fetched STATUS_VALUE: $STATUS_VALUE"
+                }' | jq -r '.data.node.options[] | select(.name=="Done") | .id | tonumber')
             
             gh api graphql -f query='
                 mutation updateStatus($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ID!) {
@@ -111,7 +109,7 @@ jobs:
                 -F projectId="$PROJECT_ID" \
                 -F itemId="$ITEM_ID" \
                 -F fieldId="$STATUS_FIELD_ID" \
-                -F value=$STATUS_VALUE
+                -F value="$STATUS_VALUE"
     
       - name: Update Issue Status1
         env:
