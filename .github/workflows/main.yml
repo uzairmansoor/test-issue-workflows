@@ -111,7 +111,7 @@ jobs:
                 -F projectId="$PROJECT_ID" \
                 -F itemId="$ITEM_ID" \
                 -F fieldId="$STATUS_FIELD_ID" \
-                -F value="$STATUS_VALUE"
+                -F value=$STATUS_VALUE
     
       - name: Update Issue Status1
         env:
