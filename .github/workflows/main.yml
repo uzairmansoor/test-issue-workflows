@@ -77,7 +77,7 @@ jobs:
             ITEM_ID: PVTI_lAHOBORmpM4AzYugzgX1a7g
         run: |
             STATUS_FIELD_ID="PVTSSF_lAHOBORmpM4AzYugzgpL_bA"
-            STATUS_VALUE=4cc61d42
+            STATUS_VALUE="98236657"
             
             gh api graphql -f query='
                 query {
