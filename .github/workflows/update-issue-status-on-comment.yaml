@@ -26,7 +26,9 @@ jobs:
           echo "Organization/User: $ORGANIZATION"
           echo "Repository: $REPO"
           echo "Issue Number: $ISSUE_NUMBER"
-
+          
+          echo "ISSUE_NUMBER (debug): $ISSUE_NUMBER"
+          
           gh api graphql -f query='
             query($repo: String!,$org: String!, $number: Int!) {
               repository(name: $repo, owner: $org) {
