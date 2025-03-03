@@ -42,7 +42,6 @@ jobs:
                 projectItems(first: 1) {
                   nodes {
                     id
-                    name
                     project {
                       id
                     }
@@ -73,7 +72,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.CLASSIC_GITHUB_TOKEN }}
         run: |
-          STATUS_FIELD_ID="YOUR_STATUS_FIELD_ID"
+          STATUS_FIELD_ID="YOUR_STATUS_FIELD_ID" # Replace with actual status field ID
           echo "$PROJECT_ID"
           echo "$ITEM_ID"
           gh api graphql -f query='
