@@ -77,9 +77,9 @@ jobs:
             ITEM_ID: PVTI_lAHOBORmpM4AzYugzgX1a7g
         run: |
             STATUS_FIELD_ID="PVTSSF_lAHOBORmpM4AzYugzgpL_bA"
-            STATUS_VALUE="\"98236657\""
+            STAT_VALUE="\"98236657\""
             
-            gh api graphql -f query='
+            STATUS_VALUE=$(gh api graphql -f query='
                 query {
                     node(id: "PVTSSF_lAHOBORmpM4AzYugzgpL_bA") {
                     ... on ProjectV2SingleSelectField {
@@ -89,7 +89,7 @@ jobs:
                         }
                     }
                     }
-                }'
+                }' | jq -r '.data.node.options[] | select(.name=="Done") | .id')
             
             gh api graphql -f query='
                 mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ID!) {
