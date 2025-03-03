@@ -89,7 +89,7 @@ jobs:
                         }
                     }
                     }
-                }' | jq -r '.data.node.options[] | select(.name=="Done") | .id | tonumber')
+                }' | jq -r '.data.node.options[] | select(.name=="Done") | .id')
             
             gh api graphql -f query='
                 mutation updateStatus($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ID!) {
