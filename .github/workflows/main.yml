@@ -72,9 +72,24 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.CLASSIC_GITHUB_TOKEN }}
         run: |
-          STATUS_FIELD_ID="YOUR_STATUS_FIELD_ID" # Replace with actual status field ID
+          STATUS_FIELD_ID="YOUR_STATUS_FIELD_ID"
           echo "$PROJECT_ID"
           echo "$ITEM_ID"
+          gh api graphql -f query='
+            {
+            node(id: "YOUR_PROJECT_ID") {
+                ... on ProjectV2 {
+                fields(first: 20) {
+                    nodes {
+                    id
+                    name
+                    }
+                }
+                }
+            }
+            }'
+
+
           gh api graphql -f query='
           mutation {
             updateProjectV2ItemFieldValue(
