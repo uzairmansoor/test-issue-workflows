@@ -28,7 +28,7 @@ jobs:
           echo "Issue Number: $ISSUE_NUMBER"
           
           echo "ISSUE_NUMBER (debug): $ISSUE_NUMBER"
-          
+
           gh api graphql -f query='
             query($repo: String!,$org: String!, $number: Int!) {
               repository(name: $repo, owner: $org) {
@@ -58,7 +58,7 @@ jobs:
                   }
                 }
               }
-            }' -f org=$ORGANIZATION -f number=$ISSUE_NUMBER -f repo=$REPO > project_data.json
+            }' -f org=$ORGANIZATION -F number=$ISSUE_NUMBER -f repo=$REPO > project_data.json
 
           # Debug: Print the entire GraphQL response
           echo "GraphQL Response:"
