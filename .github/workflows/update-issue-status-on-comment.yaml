@@ -29,7 +29,7 @@ jobs:
 
           gh api graphql -f query='
             query($repo: String!,$org: String!, $number: Int!) {
-               repository(name: $repo, owner: $org) {
+              repository(name: $repo, owner: $org) {
                 issue(number: $number) {
                   projectsV2(first: 10) {
                     nodes {
@@ -56,9 +56,19 @@ jobs:
                   }
                 }
               }
-            }' -f org=$ORGANIZATION -F number=$ISSUE_NUMBER -f repo=$REPO > project_data.json
+            }' -f org=$ORGANIZATION -f number=$ISSUE_NUMBER -f repo=$REPO > project_data.json
+
+          # Debug: Print the entire GraphQL response
+          echo "GraphQL Response:"
           cat project_data.json
-          
+
+          # Check if projectsV2.nodes is empty
+          if [[ $(jq '.data.repository.issue.projectsV2.nodes | length' project_data.json) -eq 0 ]]; then
+            echo "ERROR: No projects found for this issue. Please link the issue to a GitHub Project (V2)."
+            exit 1
+          fi
+
+          # Extract project data
           echo 'STATUS_FIELD_ID='$(jq '.data.repository.issue.projectsV2.nodes[0].fields.nodes[] | select(.name== "Status") | .id' project_data.json) >> $GITHUB_ENV
           echo 'INPROGRESS_OPTION_ID='$(jq '.data.repository.issue.projectsV2.nodes[0].fields.nodes[] | select(.name== "Status") | .options[] | select(.name=="In progress") |.id' project_data.json) >> $GITHUB_ENV
           echo 'PROJECT_NUMBER='$(jq '.data.repository.issue.projectsV2.nodes[0].number' project_data.json) >> $GITHUB_ENV
